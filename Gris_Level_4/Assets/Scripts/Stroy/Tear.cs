@@ -36,6 +36,24 @@ public class Tear : MonoBehaviour
     //当前眼泪的下标
     private static int nowTearIndex;
 
+    //已经到达目标点的眼泪数量
+    private static int isTargetNum;
+
+    //持续时间
+    private float timer;
+
+    //
+    private float curTime;
+
+    //是否销毁
+    private bool isDestroy;
+
+    public bool IsDestroy
+    {
+        get { return isDestroy; }
+        set { isDestroy = value; }
+    }
+
     private void Update()
     {
         StartWalk();
@@ -63,12 +81,7 @@ public class Tear : MonoBehaviour
             {
                 startMove = false;
 
-                targetPos = Vector3.zero;
-
-                //if(isMoveTo)
-                //{
-                //    isMoveTo = false;
-                //}
+                targetPos = Vector3.zero;             
             }
             else
             {
@@ -101,7 +114,9 @@ public class Tear : MonoBehaviour
         this.tearNum = tearNum;
     }
 
-
+    /// <summary>
+    /// 到达最后的指定位置
+    /// </summary>
     private void IsMoveToEnd()
     {
         if(movePointArray != null && isMoveTo)
@@ -110,11 +125,46 @@ public class Tear : MonoBehaviour
             {
                 StartMoveTo(movePointArray[movePointArray.Length - nowTearIndex].transform.position);
 
-                if(Vector3.Distance(this.transform.position, movePointArray[movePointArray.Length - nowTearIndex].transform.position) <= 0.1f)
-                {
-                    isMoveTo = false;
-                }
+                //Debug.LogError(Vector3.Distance(this.transform.position, movePointArray[movePointArray.Length - nowTearIndex].transform.position));
+
+                //Debug.LogError(movePointArray[movePointArray.Length - nowTearIndex].gameObject.name);
+
+                Debug.LogError(movePointArray[movePointArray.Length - nowTearIndex].transform.rotation.eulerAngles.z);
+            }
+
+            if (Vector3.Distance(this.transform.position, movePointArray[movePointArray.Length - nowTearIndex].transform.position) <= 0.1f)
+            {
+                Vector3 targetRot = new Vector3(0, 0, movePointArray[movePointArray.Length - nowTearIndex].transform.rotation.eulerAngles.z);
+
+                this.transform.rotation = Quaternion.Euler(targetRot);
+
+                ++isTargetNum;
+
+                Debug.LogError("已经到达的数量" + isTargetNum);
+
+                isMoveTo = false;
+
+                GrisGameSington.Instance.isTargetTearNum = isTargetNum;
             }
         }
+    }
+
+    /// <summary>
+    /// 眼泪按照指定位置进行移动
+    /// </summary>
+    /// <param name="dir"></param>
+    public void MoveTo(Vector3 dir)
+    {
+        if(!isDestroy)
+        {
+            this.transform.Translate(dir * speed * Time.deltaTime);
+
+            Destroy(this.gameObject, 4);            
+        }
+    }
+
+    private void OnDestroy()
+    {
+        isDestroy = true;
     }
 }

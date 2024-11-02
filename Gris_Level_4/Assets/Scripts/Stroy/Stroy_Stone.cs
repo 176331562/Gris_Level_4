@@ -37,7 +37,7 @@ public class Stroy_Stone : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        TearMove();
     }
 
     /// <summary>
@@ -62,17 +62,15 @@ public class Stroy_Stone : MonoBehaviour
     /// </summary>
     /// <returns></returns>
     IEnumerator CreateTearItem()
-    {
-        GameObject gos = null;
-
+    {       
         Tear tear = null;
 
         for (int i = 0; i < stroy_TearNum; i++)
         {
-            gos = GameObject.Instantiate(tearObj, tearMoveArray[0].position, Quaternion.identity);
-            gos.name = tearObj.name;
+            tearObjs[i] = GameObject.Instantiate(tearObj, tearMoveArray[0].position, Quaternion.identity);
+            tearObjs[i].name = tearObj.name;
 
-            tear = gos.GetComponent<Tear>();
+            tear = tearObjs[i].GetComponent<Tear>();
 
             tear.GetMoveArray(tearMoveArray, stroy_TearNum);
 
@@ -80,10 +78,36 @@ public class Stroy_Stone : MonoBehaviour
             {
                 tear.StartMoveTo(tearMoveArray[j].position);
 
-                yield return new WaitForSeconds(2);                
+                yield return new WaitForSeconds(1);                
             }
             yield return new WaitForSeconds(2);
         }       
         yield return null;
+    }
+
+    /// <summary>
+    /// 眼泪按着自身方向进行位移并且删除
+    /// </summary>
+    private void TearMove()
+    {
+        //如果所有的眼泪都移动到指定位置了
+        if(GrisGameSington.Instance.isTargetTearNum == stroy_TearNum)
+        {
+            for (int i = 0; i < tearObjs.Length; i++)
+            {
+                //如果没被删除的话
+                if(tearObjs[i] != null)
+                {
+                    if (!tearObjs[i].GetComponent<Tear>().IsDestroy)
+                    {
+                        tearObjs[i].GetComponent<Tear>().MoveTo(-tearObjs[i].transform.up);
+                    }                  
+                }
+                else
+                {
+                    GrisGameSington.Instance.isTargetTearNum = 0;
+                }
+            }
+        }
     }
 }

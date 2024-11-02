@@ -37,7 +37,6 @@ public class GrisGameSington : Sington<GrisGameSington>
     [HideInInspector]
     public float stroySpeed = 1;
 
-
     //剧情移动点位
     [HideInInspector]
     public Dictionary<string, Vector3> stroyMovePointDic = new Dictionary<string, Vector3>();
@@ -45,6 +44,10 @@ public class GrisGameSington : Sington<GrisGameSington>
     //剧情需要物体
     [HideInInspector]
     public Dictionary<string, GameObject> stroyObjDic = new Dictionary<string, GameObject>();
+
+    //已经到指定位置的眼泪数量
+    [HideInInspector]
+    public int isTargetTearNum;
     #endregion
 
     #region 组件
