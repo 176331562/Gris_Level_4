@@ -27,8 +27,9 @@ public class Stroy_Stone : MonoBehaviour
         //获取眼泪
         tearObj = ResourcesSington.Instance.LoadAsset<GameObject>("Prefab/Tear");
 
+        tearObjs = new GameObject[stroy_TearNum];
 
-        Debug.LogError(tearObj);
+        //Debug.LogError(tearObj);
         
         StartCoroutine(CreateTearItem());
     }
@@ -52,7 +53,7 @@ public class Stroy_Stone : MonoBehaviour
             tearMoveArray[i] = pointFather.GetChild(i).transform;
         }
 
-        Debug.LogError(tearMoveArray.Length);
+        //Debug.LogError(tearMoveArray.Length);
     }
 
 
@@ -61,27 +62,28 @@ public class Stroy_Stone : MonoBehaviour
     /// </summary>
     /// <returns></returns>
     IEnumerator CreateTearItem()
-    {     
-       
-    
+    {
+        GameObject gos = null;
+
+        Tear tear = null;
+
         for (int i = 0; i < stroy_TearNum; i++)
         {
-           GameObject tearGo = GameObject.Instantiate(tearObj, tearMoveArray[0].position, Quaternion.identity);
+            gos = GameObject.Instantiate(tearObj, tearMoveArray[0].position, Quaternion.identity);
+            gos.name = tearObj.name;
 
-           Tear tear = tearGo.GetComponent<Tear>();
+            tear = gos.GetComponent<Tear>();
+
+            tear.GetMoveArray(tearMoveArray, stroy_TearNum);
 
             for (int j = 0; j < tearMoveArray.Length-stroy_TearNum; j++)
             {
                 tear.StartMoveTo(tearMoveArray[j].position);
 
-                if(Vector3.Distance(tearGo.transform.position,tearMoveArray[tearMoveArray.Length - stroy_TearNum].transform.position) <= 1f)
-                {
-                    Debug.LogError("到了");
-                }
-
-                yield return new WaitForSeconds(1);
+                yield return new WaitForSeconds(2);                
             }
             yield return new WaitForSeconds(2);
         }       
+        yield return null;
     }
 }

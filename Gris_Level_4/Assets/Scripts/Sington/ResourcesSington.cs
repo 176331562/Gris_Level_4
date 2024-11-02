@@ -77,7 +77,7 @@ public class ResourcesSington : Sington<ResourcesSington>
 
             rr.completed += (ee) => 
             {
-                Debug.LogError(12);
+                //Debug.LogError(12);
 
                 callBack(rr.asset as T);
             };    
