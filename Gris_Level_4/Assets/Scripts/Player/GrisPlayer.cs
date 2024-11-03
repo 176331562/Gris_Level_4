@@ -63,7 +63,7 @@ public class GrisPlayer : MonoBehaviour
   
     private void FixedUpdate()
     {
-        //StroyWalkTo(targetTrans, filpX);
+        StroyWalkTo(targetTrans, filpX);
 
         PlayerMove();
     }
@@ -153,53 +153,50 @@ public class GrisPlayer : MonoBehaviour
 
     private void PlayerMove()
     {
-        //if(GrisGameSington.Instance.nowPlayerModel == NowPlayerModel.controller)
-        //{
-        //    float horizontal = Input.GetAxisRaw("Horizontal");
+        //GrisGameSington.Instance.nowPlayerModel = NowPlayerModel.controller;
 
-        //    if (horizontal != 0)
-        //    {
-        //        rig2D.velocity = new Vector2(horizontal * 5 * Time.deltaTime, 0);
-        //    }
-        //}
-        float horizontal = Input.GetAxisRaw("Horizontal");
-
-        //PlayerJump();
-
-        //if (horizontal != 0)
-        //{
-        //    rig2D.velocity = new Vector2(horizontal * 50 * Time.deltaTime, 0);
-
-        //    //如果在移动就得改变面朝向
-        //    sr.flipX = horizontal < 0 ? true : false;
-
-        //    //
-        //    if (isGround && !isJump)
-        //    {
-        //        playerAni.SetBool("Run", true);
-        //        playerAni.SetBool("isGround", true);
-        //    }
-
-        //}
-        //else
-        //{
-        //    if(!isJump)
-        //    {
-        //        rig2D.velocity = Vector2.zero;
-        //    }
-
-        //    if (isGround)
-        //    {
-        //        playerAni.SetBool("Run", false);
-        //        playerAni.SetBool("isGround", true);
-        //    }
-        //}
-
-        //判断当前是否进行地形碰撞
-        if (rig2D.bodyType != RigidbodyType2D.Dynamic)
+        if (GrisGameSington.Instance.nowPlayerModel == NowPlayerModel.controller)
         {
-            rig2D.bodyType = RigidbodyType2D.Dynamic;
+            float horizontal = Input.GetAxisRaw("Horizontal");
+
+            PlayerJump();
+
+            if (horizontal != 0)
+            {
+                rig2D.velocity = new Vector2(horizontal * 200 * Time.deltaTime, rig2D.velocity.y);
+
+                //如果在移动就得改变面朝向
+                sr.flipX = horizontal < 0 ? true : false;
+
+                //
+                if (isGround && !isJump)
+                {
+                    playerAni.SetBool("Run", true);
+                    playerAni.SetBool("isGround", true);
+                }
+
+            }
+            else
+            {
+                if (!isJump)
+                {
+                    rig2D.velocity = Vector2.zero;
+                }
+
+                if (isGround)
+                {
+                    playerAni.SetBool("Run", false);
+                    playerAni.SetBool("isGround", true);
+                }
+            }
+
+            //判断当前是否进行地形碰撞
+            if (rig2D.bodyType != RigidbodyType2D.Dynamic)
+            {
+                rig2D.bodyType = RigidbodyType2D.Dynamic;
+            }
         }
+        
 
         
     }
@@ -207,36 +204,46 @@ public class GrisPlayer : MonoBehaviour
     //玩家跳跃
     private void PlayerJump()
     {
-        //在地面上按下
-        if(isGround && Input.GetKeyDown(KeyCode.Space))
+        if(GrisGameSington.Instance.nowPlayerModel == NowPlayerModel.controller)
         {
-            rig2D.AddForce(new Vector2(0, 500));
+            //在地面上按下
+            if (isGround && Input.GetKeyDown(KeyCode.Space))
+            {
+                rig2D.velocity = new Vector2(rig2D.velocity.x, rig2D.velocity.y + 8);
 
-            isJump = true;
-        }
+                isJump = true;
+            }
 
-        //如果已经按下了Jump键就判断rig的速度来进行状态转换
-        if(isJump)
-        {
-            playerAni.SetFloat("JumpY", rig2D.velocity.y);
-        }
-        
-        //如果跳跃了一定高度就判定已经离开地面
-        if (rig2D.velocity.y > 0.2f && isJump)
-        {
-            isGround = false;
+            //如果已经按下了Jump键就判断rig的速度来进行状态转换
+            if (isJump)
+            {
+                playerAni.SetFloat("JumpY", rig2D.velocity.y);
+            }
 
-            playerAni.SetBool("isGround", isGround);
+            //如果跳跃了一定高度就判定已经离开地面
+            if (rig2D.velocity.y > 0.5f && isJump)
+            {
+                isGround = false;
+
+                playerAni.SetBool("isGround", isGround);
+            }
         }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        isGround = collision.collider.CompareTag("Ground") ? true : false;
+        if (collision.collider.ClosestPoint(this.transform.position).y < this.transform.position.y)
+        {
+            isGround = collision.collider.CompareTag("Ground") ? true : false;
 
-        playerAni.SetBool("isGround", isGround);
+            rig2D.velocity = new Vector2(rig2D.velocity.x, 0);
 
-        isJump = false;
+            playerAni.SetBool("isGround", isGround);
+
+            isJump = false;
+        }
+
+        
 
         //Debug.LogError(isGround);
     }

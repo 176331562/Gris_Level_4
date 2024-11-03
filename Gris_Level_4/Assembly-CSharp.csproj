@@ -64,6 +64,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Other\CameraFollow.cs" />
     <Compile Include="Assets\Scripts\Other\Stone.cs" />
     <Compile Include="Assets\Scripts\Player\GrisPlayer.cs" />
     <Compile Include="Assets\Scripts\Sington\AssetBundleSington.cs" />

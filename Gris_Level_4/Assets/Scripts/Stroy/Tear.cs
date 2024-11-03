@@ -140,7 +140,7 @@ public class Tear : MonoBehaviour
 
                 ++isTargetNum;
 
-                Debug.LogError("已经到达的数量" + isTargetNum);
+                //Debug.LogError("已经到达的数量" + isTargetNum);
 
                 isMoveTo = false;
 
