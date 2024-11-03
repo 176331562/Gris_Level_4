@@ -105,7 +105,10 @@ public class Stroy_Stone : MonoBehaviour
                 }
                 else
                 {
+                    //直接退出遍历
                     GrisGameSington.Instance.isTargetTearNum = 0;
+
+                    GrisGameSington.Instance.nowPlayerModel = NowPlayerModel.controller;
                 }
             }
         }

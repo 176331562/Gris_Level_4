@@ -21,6 +21,15 @@ public class GrisPlayer : MonoBehaviour
 
     //移动到点位后需要执行的委托
     private UnityAction moveToEvent;
+
+    //玩家移动速度
+    private float moveSpeed;
+
+    //是否接地
+    private bool isGround;
+
+    //
+    private bool isJump;
     #endregion
 
     #region 组件
@@ -54,45 +63,56 @@ public class GrisPlayer : MonoBehaviour
   
     private void FixedUpdate()
     {
-        StroyWalkTo(targetTrans, filpX);
+        //StroyWalkTo(targetTrans, filpX);
+
+        PlayerMove();
     }
 
-   /// <summary>
-   /// 开启剧情模式
-   /// </summary>
-   /// <param name="targetPoint">目标点</param>
-   /// <param name="isFilpX">是否翻面</param>
+    private void Update()
+    {
+        PlayerJump();
+    }
+
+    /// <summary>
+    /// 开启剧情模式
+    /// </summary>
+    /// <param name="targetPoint">目标点</param>
+    /// <param name="isFilpX">是否翻面</param>
     private void StroyWalkTo(Vector3 targetPoint,bool isFilpX)
     {
-        if (isStroyMove && targetPoint != Vector3.zero)
+        if(GrisGameSington.Instance.nowPlayerModel == NowPlayerModel.stroy)
         {
-            if(isFilpX != sr.flipX)
+            if (isStroyMove && targetPoint != Vector3.zero)
             {
-                sr.flipX = isFilpX;
-            }
-            
-            if (Vector2.Distance(this.transform.position, targetPoint) >= 0.2f)
-            {
-                playerAni.Play("Walk");
-
-                this.transform.position = Vector2.Lerp(this.transform.position, targetPoint, GrisGameSington.Instance.stroySpeed*0.4f * Time.deltaTime);
-            }
-            else
-            {
-                playerAni.Play("Idle");
-
-                rig2D.bodyType = RigidbodyType2D.Dynamic;
-
-                isStroyMove = false;
-
-                if(moveToEvent != null)
+                if (isFilpX != sr.flipX)
                 {
-                    moveToEvent?.Invoke();
+                    sr.flipX = isFilpX;
+                }
 
-                    moveToEvent = null;
+                if (Vector2.Distance(this.transform.position, targetPoint) >= 0.2f)
+                {
+                    playerAni.Play("Walk");
+
+                    this.transform.position = Vector2.Lerp(this.transform.position, targetPoint, GrisGameSington.Instance.stroySpeed * 0.4f * Time.deltaTime);
+                }
+                else
+                {
+                    playerAni.Play("Idle");
+
+                    rig2D.bodyType = RigidbodyType2D.Dynamic;
+
+                    isStroyMove = false;
+
+                    if (moveToEvent != null)
+                    {
+                        moveToEvent?.Invoke();
+
+                        moveToEvent = null;
+                    }
                 }
             }
         }
+        
     }
 
     /// <summary>
@@ -129,5 +149,95 @@ public class GrisPlayer : MonoBehaviour
         rig2D.bodyType = RigidbodyType2D.Kinematic;
 
         moveToEvent = willTodoAction;
+    }
+
+    private void PlayerMove()
+    {
+        //if(GrisGameSington.Instance.nowPlayerModel == NowPlayerModel.controller)
+        //{
+        //    float horizontal = Input.GetAxisRaw("Horizontal");
+
+        //    if (horizontal != 0)
+        //    {
+        //        rig2D.velocity = new Vector2(horizontal * 5 * Time.deltaTime, 0);
+        //    }
+        //}
+        float horizontal = Input.GetAxisRaw("Horizontal");
+
+        //PlayerJump();
+
+        //if (horizontal != 0)
+        //{
+        //    rig2D.velocity = new Vector2(horizontal * 50 * Time.deltaTime, 0);
+
+        //    //如果在移动就得改变面朝向
+        //    sr.flipX = horizontal < 0 ? true : false;
+
+        //    //
+        //    if (isGround && !isJump)
+        //    {
+        //        playerAni.SetBool("Run", true);
+        //        playerAni.SetBool("isGround", true);
+        //    }
+
+        //}
+        //else
+        //{
+        //    if(!isJump)
+        //    {
+        //        rig2D.velocity = Vector2.zero;
+        //    }
+
+        //    if (isGround)
+        //    {
+        //        playerAni.SetBool("Run", false);
+        //        playerAni.SetBool("isGround", true);
+        //    }
+        //}
+
+        //判断当前是否进行地形碰撞
+        if (rig2D.bodyType != RigidbodyType2D.Dynamic)
+        {
+            rig2D.bodyType = RigidbodyType2D.Dynamic;
+        }
+
+        
+    }
+
+    //玩家跳跃
+    private void PlayerJump()
+    {
+        //在地面上按下
+        if(isGround && Input.GetKeyDown(KeyCode.Space))
+        {
+            rig2D.AddForce(new Vector2(0, 500));
+
+            isJump = true;
+        }
+
+        //如果已经按下了Jump键就判断rig的速度来进行状态转换
+        if(isJump)
+        {
+            playerAni.SetFloat("JumpY", rig2D.velocity.y);
+        }
+        
+        //如果跳跃了一定高度就判定已经离开地面
+        if (rig2D.velocity.y > 0.2f && isJump)
+        {
+            isGround = false;
+
+            playerAni.SetBool("isGround", isGround);
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        isGround = collision.collider.CompareTag("Ground") ? true : false;
+
+        playerAni.SetBool("isGround", isGround);
+
+        isJump = false;
+
+        //Debug.LogError(isGround);
     }
 }

@@ -129,7 +129,7 @@ public class Tear : MonoBehaviour
 
                 //Debug.LogError(movePointArray[movePointArray.Length - nowTearIndex].gameObject.name);
 
-                Debug.LogError(movePointArray[movePointArray.Length - nowTearIndex].transform.rotation.eulerAngles.z);
+                //Debug.LogError(movePointArray[movePointArray.Length - nowTearIndex].transform.rotation.eulerAngles.z);
             }
 
             if (Vector3.Distance(this.transform.position, movePointArray[movePointArray.Length - nowTearIndex].transform.position) <= 0.1f)
