@@ -28,8 +28,12 @@ public class GrisPlayer : MonoBehaviour
     //是否接地
     private bool isGround;
 
-    //
+    //是否正在跳跃状态
     private bool isJump;
+
+    //眼泪跟随人物的点位
+    [HideInInspector]
+    public Transform[] followPoints;
     #endregion
 
     #region 组件
@@ -57,7 +61,14 @@ public class GrisPlayer : MonoBehaviour
 
     void Start()
     {
-       
+        followPoints = new Transform[this.transform.Find("FollowPoints").childCount];
+
+        for (int i = 0; i < this.transform.Find("FollowPoints").childCount; i++)
+        {
+            followPoints[i] = this.transform.Find("FollowPoints").GetChild(i).transform;
+        }
+
+        GrisGameSington.Instance.followTearPoints = followPoints;
     }
 
   

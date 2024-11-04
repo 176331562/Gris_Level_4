@@ -55,7 +55,8 @@ public class GrisGameSington : Sington<GrisGameSington>
     [HideInInspector]
     public Transform playerTrans;
 
-
+    [HideInInspector]
+    public Transform[] followTearPoints;
     #endregion
      
     private void Awake()

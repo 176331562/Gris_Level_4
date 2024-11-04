@@ -13,6 +13,15 @@ public class AudioSington : Sington<AudioSington>
     //音量
     private float volmue;
 
+    //开始改变音量
+    private bool startChangeVolume;
+
+    //目标音量
+    private float targetVolume;
+
+    //目标音频
+    private AudioClip targetClip;
+
     private void Awake()
     {
         if(audioSource == null)
@@ -21,6 +30,29 @@ public class AudioSington : Sington<AudioSington>
 
             volmue = audioSource.volume;
             
+        }
+    }
+
+    private void Update()
+    {
+        if(startChangeVolume)
+        {
+            if(audioSource.volume > 0)
+            {
+                audioSource.volume -= Time.deltaTime;
+            }
+            else if(audioSource.volume <= 0)
+            {
+                audioSource.volume = 0;
+
+                audioSource.clip = targetClip;
+
+                audioSource.volume = volmue;
+
+                audioSource.Play();
+
+                startChangeVolume = false;
+            }          
         }
     }
 
@@ -39,5 +71,14 @@ public class AudioSington : Sington<AudioSington>
         {
             audioSource.Play();
         }
+    }
+
+    public void ChangeSound(bool isStartChange,AudioClip targetClip)
+    {
+        this.startChangeVolume = isStartChange;
+
+        this.targetClip = targetClip;
+
+
     }
 }

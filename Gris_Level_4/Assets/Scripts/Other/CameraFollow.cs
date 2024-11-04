@@ -27,18 +27,16 @@ public class CameraFollow : MonoBehaviour
         
     }
 
-  
-
-    private void LateUpdate()
+    private void FixedUpdate()
     {
         //开始移动到目标点
-        if(GrisGameSington.Instance.nowPlayerModel == NowPlayerModel.controller)
+        if (GrisGameSington.Instance.nowPlayerModel == NowPlayerModel.controller)
         {
-            Vector3 targetTrans = new Vector3(GrisGameSington.Instance.playerTrans.position.x, GrisGameSington.Instance.playerTrans.position.y+2.2f, -10);
+            Vector3 targetTrans = new Vector3(GrisGameSington.Instance.playerTrans.position.x, GrisGameSington.Instance.playerTrans.position.y + 2.2f, -10);
 
             targetPoint = targetTrans;
         }
-       
+
 
         if (targetPoint != Vector3.zero)
         {
@@ -53,6 +51,11 @@ public class CameraFollow : MonoBehaviour
         {
             Camera.main.orthographicSize = Mathf.Lerp(Camera.main.orthographicSize, nowSize, changeSpeed * Time.deltaTime);
         }
+    }
+
+    private void LateUpdate()
+    {
+       
     }
 
     /// <summary>
