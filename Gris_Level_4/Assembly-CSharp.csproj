@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Other\CameraFollow.cs" />
+    <Compile Include="Assets\Scripts\Other\FlyingCarpet.cs" />
     <Compile Include="Assets\Scripts\Other\Stone.cs" />
     <Compile Include="Assets\Scripts\Player\GrisPlayer.cs" />
     <Compile Include="Assets\Scripts\Sington\AssetBundleSington.cs" />
@@ -72,7 +73,10 @@
     <Compile Include="Assets\Scripts\Sington\GrisGameSington.cs" />
     <Compile Include="Assets\Scripts\Sington\ResourcesSington.cs" />
     <Compile Include="Assets\Scripts\Sington\Sington.cs" />
-    <Compile Include="Assets\Scripts\Stroy\ChangeSoundArea.cs" />
+    <Compile Include="Assets\Scripts\Stroy\Area\ChangeCameraArea.cs" />
+    <Compile Include="Assets\Scripts\Stroy\Area\ChangeColorArea.cs" />
+    <Compile Include="Assets\Scripts\Stroy\Area\ChangeSoundArea.cs" />
+    <Compile Include="Assets\Scripts\Stroy\Area\ToNextLevelArea.cs" />
     <Compile Include="Assets\Scripts\Stroy\LevelStroy1.cs" />
     <Compile Include="Assets\Scripts\Stroy\Stroy_Stone.cs" />
     <Compile Include="Assets\Scripts\Stroy\Tear\Tear.cs" />

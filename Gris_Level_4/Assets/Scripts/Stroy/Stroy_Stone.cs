@@ -78,7 +78,7 @@ public class Stroy_Stone : MonoBehaviour
             {
                 tear.StartMoveTo(tearMoveArray[j].position);
 
-                yield return new WaitForSeconds(1);                
+                yield return new WaitForSeconds(0.5f);                
             }
             yield return new WaitForSeconds(2);
         }       
@@ -109,6 +109,9 @@ public class Stroy_Stone : MonoBehaviour
                     GrisGameSington.Instance.isTargetTearNum = 0;
 
                     GrisGameSington.Instance.nowPlayerModel = NowPlayerModel.controller;
+
+                    GrisGameSington.Instance.playerTrans.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+                    //Camera.main.GetComponent<CameraFollow>().MoveTo(new Vector3(GrisGameSington.Instance.playerTrans.position.x, GrisGameSington.Instance.playerTrans.position.y + 2.2f, -10));
                 }
             }
         }

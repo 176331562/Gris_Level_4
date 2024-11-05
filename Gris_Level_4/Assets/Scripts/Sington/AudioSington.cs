@@ -67,6 +67,8 @@ public class AudioSington : Sington<AudioSington>
 
         audioSource.volume = volmue;
 
+        audioSource.loop = true;
+
         if (!audioSource.isPlaying)
         {
             audioSource.Play();

@@ -48,6 +48,9 @@ public class GrisGameSington : Sington<GrisGameSington>
     //已经到指定位置的眼泪数量
     [HideInInspector]
     public int isTargetTearNum;
+
+    [HideInInspector]
+    public int isFollowTearNum;
     #endregion
 
     #region 组件

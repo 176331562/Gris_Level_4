@@ -29,7 +29,7 @@ public class LevelStroy1 : MonoBehaviour
         GrisGameSington.Instance.StartFindMovePoint();
 
         //获取需要的剧情点位，并进行移动
-        playerTrans.GetComponent<GrisPlayer>().StartStroy(GrisGameSington.Instance.stroyMovePointDic["MovePoint_1"], true,()=> 
+        playerTrans.GetComponent<GrisPlayer>().StartStroy(GrisGameSington.Instance.stroyMovePointDic["MovePoint_1"], true,GrisPlayer.StroyMoveType.Walk,()=> 
         {
             //如果没有剧情石像
             if (GrisGameSington.Instance.stroyObjDic["Gril1"].GetComponent<Stroy_Stone>() == null)

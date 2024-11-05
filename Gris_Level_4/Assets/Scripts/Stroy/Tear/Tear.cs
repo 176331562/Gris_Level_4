@@ -189,5 +189,7 @@ public class Tear : MonoBehaviour
         nowFollowIndex = nowIndex;
 
         ++nowFollowNums;
+
+        GrisGameSington.Instance.isFollowTearNum = nowFollowNums;
     }
 }

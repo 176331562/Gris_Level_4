@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 /*------------脚本创建者：sikaris----------------
  * -----------脚本作用：摄像机跟随移动--------
  * -----------脚本创建时间：2024-11-03-----------
@@ -22,6 +23,9 @@ public class CameraFollow : MonoBehaviour
     //是否可以开始移动
     private bool startMove;
 
+    //移动到目标点后就执行
+    private UnityAction moveToAction;
+
     void Start()
     {
         
@@ -32,19 +36,25 @@ public class CameraFollow : MonoBehaviour
         //开始移动到目标点
         if (GrisGameSington.Instance.nowPlayerModel == NowPlayerModel.controller)
         {
-            Vector3 targetTrans = new Vector3(GrisGameSington.Instance.playerTrans.position.x, GrisGameSington.Instance.playerTrans.position.y + 2.2f, -10);
+            Vector3 targetTrans = new Vector3(GrisGameSington.Instance.playerTrans.position.x, GrisGameSington.Instance.playerTrans.position.y + 3.5f, -10);
 
             targetPoint = targetTrans;
         }
 
 
         if (targetPoint != Vector3.zero)
-        {
-            //if(Vector3.Distance(this.transform.position,targetPoint) >= 0.1f)
-            //{
-
-            //}           
+        {               
             this.transform.position = Vector3.Lerp(this.transform.position, targetPoint, moveSpeed * Time.deltaTime);
+
+            if(Vector3.Distance(this.transform.position,targetPoint) <= 0.1f)
+            {
+                if(moveToAction != null)
+                {
+                    moveToAction?.Invoke();
+
+                    moveToAction = null;
+                }
+            }
         }
 
         if (Camera.main.orthographicSize != nowSize && nowSize != 0)
@@ -67,6 +77,19 @@ public class CameraFollow : MonoBehaviour
         this.targetPoint = targetPoint;
 
         startMove = true;
+    }
+
+    /// <summary>
+    /// 改变目标点
+    /// </summary>
+    /// <param name="targetPoint"></param>
+    public void MoveTo(Vector3 targetPoint,UnityAction moveToAction)
+    {
+        this.targetPoint = targetPoint;
+
+        startMove = true;
+
+        this.moveToAction = moveToAction;
     }
 
     /// <summary>
