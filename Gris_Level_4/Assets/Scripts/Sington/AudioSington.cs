@@ -75,6 +75,25 @@ public class AudioSington : Sington<AudioSington>
         }
     }
 
+    /// <summary>
+    /// 播放音乐
+    /// </summary>
+    /// <param name="audioClip"></param>
+    /// <param name="volmue"></param>
+    public void PlayMusic(AudioClip audioClip, float volmue,bool isLoop)
+    {
+        audioSource.clip = audioClip;
+
+        audioSource.volume = volmue;
+
+        audioSource.loop = isLoop;
+
+        if (!audioSource.isPlaying)
+        {
+            audioSource.Play();
+        }
+    }
+
     public void ChangeSound(bool isStartChange,AudioClip targetClip)
     {
         this.startChangeVolume = isStartChange;

@@ -26,6 +26,9 @@ public class CameraFollow : MonoBehaviour
     //移动到目标点后就执行
     private UnityAction moveToAction;
 
+    //
+    private bool moveToPlayer;
+
     void Start()
     {
         
@@ -34,13 +37,13 @@ public class CameraFollow : MonoBehaviour
     private void FixedUpdate()
     {
         //开始移动到目标点
-        if (GrisGameSington.Instance.nowPlayerModel == NowPlayerModel.controller)
+        if (GrisGameSington.Instance.nowPlayerModel == NowPlayerModel.controller || moveToPlayer)
         {
             Vector3 targetTrans = new Vector3(GrisGameSington.Instance.playerTrans.position.x, GrisGameSington.Instance.playerTrans.position.y + 3.5f, -10);
 
             targetPoint = targetTrans;
         }
-
+       
 
         if (targetPoint != Vector3.zero)
         {               
@@ -90,6 +93,12 @@ public class CameraFollow : MonoBehaviour
         startMove = true;
 
         this.moveToAction = moveToAction;
+    }
+
+    //
+    public void MoveToPlayer(bool b)
+    {
+        this.moveToPlayer = b;
     }
 
     /// <summary>

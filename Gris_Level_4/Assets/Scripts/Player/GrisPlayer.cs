@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 /*------------脚本创建者：sikaris----------------
  * -----------脚本作用：人物移动脚本--------
  * -----------脚本创建时间：2024-10-08-----------
@@ -49,6 +50,11 @@ public class GrisPlayer : MonoBehaviour
 
     //默认人物平移移动
     private StroyMoveType moveType = StroyMoveType.None;
+
+    //行走音频
+    private AudioClip runClip, jumpClip, fallClip;
+
+    private float runTime,jumpTime;
     #endregion
 
     #region 组件
@@ -61,6 +67,8 @@ public class GrisPlayer : MonoBehaviour
     //刚体
     private Rigidbody2D rig2D;
 
+    //
+    private AudioSource audioSource;
     #endregion
 
 
@@ -72,6 +80,8 @@ public class GrisPlayer : MonoBehaviour
         sr = this.GetComponent<SpriteRenderer>();
 
         rig2D = this.GetComponent<Rigidbody2D>();
+
+        audioSource = this.GetComponent<AudioSource>();
     }
 
     void Start()
@@ -84,6 +94,14 @@ public class GrisPlayer : MonoBehaviour
         }
 
         GrisGameSington.Instance.followTearPoints = followPoints;
+
+        runClip = ResourcesSington.Instance.LoadAsset<AudioClip>("AudioClip/Move");
+
+        jumpClip = ResourcesSington.Instance.LoadAsset<AudioClip>("AudioClip/Jump");
+
+        fallClip = ResourcesSington.Instance.LoadAsset<AudioClip>("AudioClip/Land");
+
+       
     }
 
   
@@ -133,8 +151,22 @@ public class GrisPlayer : MonoBehaviour
                 {
                     playerAni.SetBool("Run", true);
                     playerAni.SetBool("isGround", true);
-                }
 
+                    Debug.LogError(3);
+
+                    if (runTime < 0.5f)
+                    {
+                        Debug.LogError(1);
+
+                        runTime += Time.deltaTime;                    
+                    }
+                    else
+                    {
+                        AudioSource.PlayClipAtPoint(runClip, this.transform.position);
+
+                        runTime = 0;
+                    }
+                }               
             }
             else
             {
@@ -186,6 +218,21 @@ public class GrisPlayer : MonoBehaviour
             if (isJump)
             {
                 playerAni.SetFloat("JumpY", rig2D.velocity.y);
+
+                if (jumpTime < 3f)
+                {
+             
+
+                    jumpTime += Time.deltaTime;
+                }
+                else
+                {
+                    AudioSource.PlayClipAtPoint(jumpClip, this.transform.position);
+
+                    jumpTime = 0;
+                }
+
+                AudioSource.PlayClipAtPoint(jumpClip, this.transform.position);
             }
 
             //如果跳跃了一定高度就判定已经离开地面
@@ -198,6 +245,26 @@ public class GrisPlayer : MonoBehaviour
         }
     }
 
+    public void PlayMoveAudio()
+    {
+        audioSource.clip = runClip;
+
+        audioSource.Play();
+    }
+
+    public void PlayJumpAudio()
+    {
+        audioSource.clip = jumpClip;
+
+        audioSource.Play();
+    }
+
+    public void PlayFallAudio()
+    {
+        audioSource.clip = fallClip;
+
+        audioSource.Play();
+    }
     #endregion
 
 
@@ -331,7 +398,7 @@ public class GrisPlayer : MonoBehaviour
     }
 
 
-
+    //完成第一关剧情模式收尾并进入第二场景
     public void ToLevel2Stroy()
     {
         StartCoroutine(ToLevel2StroyMethod());
@@ -339,6 +406,10 @@ public class GrisPlayer : MonoBehaviour
 
     IEnumerator ToLevel2StroyMethod()
     {
+        AsyncOperation rr = SceneManager.LoadSceneAsync(1);
+
+        rr.allowSceneActivation = false;
+
         ChangeColorArea changeColorArea = GameObject.Find("Area/RenderColors").GetComponent<ChangeColorArea>();
 
         playerAni.SetBool("Run", false);
@@ -352,18 +423,15 @@ public class GrisPlayer : MonoBehaviour
         StartStroy(this.transform.position + (this.transform.up * 6), false, StroyMoveType.None);
 
         CameraFollow cameraFollow = Camera.main.GetComponent<CameraFollow>();
-
+        cameraFollow.ChangeSize(8.17f);
         cameraFollow.MoveTo(this.transform.position + new Vector3(10, 8f, -10), () =>
         {
             ResourcesSington.Instance.LoadAssetAync<AudioClip>("AudioClip/BG4", (clip) =>
             {
                 AudioSington.Instance.PlayMusic(clip, 1);
             });
-
-            cameraFollow.ChangeSize(8.17f);
-
+           
             playerAni.Play("PlayerFly");
-
             
         });
 
@@ -371,17 +439,28 @@ public class GrisPlayer : MonoBehaviour
 
         changeColorArea.StartChange();
 
-        yield return new WaitForSeconds(30);
+        yield return new WaitForSeconds(34);
 
         if(changeColorArea.isDown)
         {
             Debug.LogError("完成");
+
+            Vector3 targetPoint = new Vector3(GrisGameSington.Instance.playerTrans.position.x, GrisGameSington.Instance.playerTrans.position.y + 3.5f, -10);
+            cameraFollow.MoveToPlayer(true);
+
+            cameraFollow.ChangeSize(5);
+
+            StartStroy(this.transform.position + (-this.transform.up * 6), false, StroyMoveType.None);
+
+            yield return new WaitForSeconds(6);
+
+            playerAni.Play("Cry Back");
+
+            yield return new WaitForSeconds(2);
+
+            rr.allowSceneActivation = true;
         }
-
-
-
     }
-
     #endregion
 }
 
