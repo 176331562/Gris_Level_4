@@ -32,6 +32,8 @@ public class TearItem : MonoBehaviour
     //生成的图像
     private GameObject reloadObj;
 
+    //
+    private static int nowIndex = 1;
 
     private void Start()
     {
@@ -41,10 +43,12 @@ public class TearItem : MonoBehaviour
 
         srColor = sr.color;
 
-        ResourcesSington.Instance.LoadAssetAync<GameObject>("Prefab/"+ this.gameObject.name, (obj) => 
+        ResourcesSington.Instance.LoadAssetAync<GameObject>("Prefab/" + this.gameObject.name, (obj) =>
         {
             reloadObj = obj;
         });
+
+
     }
 
 
@@ -77,6 +81,4 @@ public class TearItem : MonoBehaviour
             Destroy(this.gameObject);
         }
     }
-
-    
 }

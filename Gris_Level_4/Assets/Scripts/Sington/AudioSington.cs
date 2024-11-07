@@ -94,6 +94,11 @@ public class AudioSington : Sington<AudioSington>
         }
     }
 
+    public void StopPlay()
+    {
+        audioSource.Stop();
+    }
+
     public void ChangeSound(bool isStartChange,AudioClip targetClip)
     {
         this.startChangeVolume = isStartChange;

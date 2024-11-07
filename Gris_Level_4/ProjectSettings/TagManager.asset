@@ -8,6 +8,8 @@ TagManager:
   - StroyMovePoint
   - Stroy
   - PointsFather
+  - SingCircle
+  - Boss
   layers:
   - Default
   - TransparentFX

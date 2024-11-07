@@ -55,6 +55,8 @@ public class GrisPlayer : MonoBehaviour
     private AudioClip runClip, jumpClip, fallClip;
 
     private float runTime,jumpTime;
+
+    public int hp;
     #endregion
 
     #region 组件
@@ -69,6 +71,8 @@ public class GrisPlayer : MonoBehaviour
 
     //
     private AudioSource audioSource;
+
+    private SingCircleController circleController;
     #endregion
 
 
@@ -101,7 +105,12 @@ public class GrisPlayer : MonoBehaviour
 
         fallClip = ResourcesSington.Instance.LoadAsset<AudioClip>("AudioClip/Land");
 
-       
+        GrisGameSington.Instance.nowPlayerModel = NowPlayerModel.controller;
+
+        if(GrisGameSington.Instance.nowStoryLevel  == NowStoryLevel.level2)
+        {
+            circleController = this.transform.Find("SingCicle").GetComponent<SingCircleController>();
+        }
     }
 
   
@@ -109,84 +118,108 @@ public class GrisPlayer : MonoBehaviour
     {
         StroyWalkTo(targetTrans, moveType, filpX);
 
-        PlayerMove();
+        if(hp > 0)
+        {
+            PlayerMove();
+        }
     }
 
     private void Update()
     {
-        PlayerJump();
+        if(hp > 0)
+        {
+            PlayerJump();
+        }
+        
     }
 
 
-    #region 人物移动
+    #region 人物方法
     //人物移动
     private void PlayerMove()
     {
-        //GrisGameSington.Instance.nowPlayerModel = NowPlayerModel.controller;
+        
 
         if (GrisGameSington.Instance.nowPlayerModel == NowPlayerModel.controller)
         {
-            float horizontal = Input.GetAxisRaw("Horizontal");
-
-            if (horizontal == 0 && !isJump)
+            if(Input.GetKey(KeyCode.K) && isGround)
             {
-                rig2D.drag = 5;
+                playerAni.SetBool("Sing", true);
+
+                circleController.SingSang(true);
+
+                return;
             }
             else
             {
-                rig2D.drag = 1;
-            }
+                playerAni.SetBool("Sing", false);
 
-            PlayerJump();
+                circleController.SingSang(false);
 
-            if (horizontal != 0)
-            {
-                rig2D.velocity = new Vector2(horizontal * 200 * Time.deltaTime, rig2D.velocity.y);
+                float horizontal = Input.GetAxisRaw("Horizontal");
 
-                //如果在移动就得改变面朝向
-                sr.flipX = horizontal < 0 ? true : false;
-
-                //
-                if (isGround && !isJump)
+                if (horizontal == 0 && !isJump)
                 {
-                    playerAni.SetBool("Run", true);
-                    playerAni.SetBool("isGround", true);
-
-                    Debug.LogError(3);
-
-                    if (runTime < 0.5f)
-                    {
-                        Debug.LogError(1);
-
-                        runTime += Time.deltaTime;                    
-                    }
-                    else
-                    {
-                        AudioSource.PlayClipAtPoint(runClip, this.transform.position);
-
-                        runTime = 0;
-                    }
-                }               
-            }
-            else
-            {
-                if (!isJump && rig2D.velocity.y >= 0)
+                    rig2D.drag = 5;
+                }
+                else
                 {
-                    rig2D.velocity = Vector2.zero;
+                    rig2D.drag = 1;
                 }
 
-                if (isGround)
+                PlayerJump();
+
+                if (horizontal != 0)
                 {
-                    playerAni.SetBool("Run", false);
-                    playerAni.SetBool("isGround", true);
+                    rig2D.velocity = new Vector2(horizontal * 200 * Time.deltaTime, rig2D.velocity.y);
+
+                    //如果在移动就得改变面朝向
+                    sr.flipX = horizontal < 0 ? true : false;
+
+                    //
+                    if (isGround && !isJump)
+                    {
+                        playerAni.SetBool("Run", true);
+                        playerAni.SetBool("isGround", true);
+
+
+
+                        if (runTime < 0.5f)
+                        {
+
+
+                            runTime += Time.deltaTime;
+                        }
+                        else
+                        {
+                            AudioSource.PlayClipAtPoint(runClip, this.transform.position);
+
+                            runTime = 0;
+                        }
+                    }
+                }
+                else
+                {
+                    if (!isJump && rig2D.velocity.y >= 0)
+                    {
+                        rig2D.velocity = Vector2.zero;
+                    }
+
+                    if (isGround)
+                    {
+                        playerAni.SetBool("Run", false);
+                        playerAni.SetBool("isGround", true);
+                    }
+                }
+
+                //判断当前是否进行地形碰撞
+                if (rig2D.bodyType != RigidbodyType2D.Dynamic)
+                {
+                    rig2D.bodyType = RigidbodyType2D.Dynamic;
                 }
             }
 
-            //判断当前是否进行地形碰撞
-            if (rig2D.bodyType != RigidbodyType2D.Dynamic)
-            {
-                rig2D.bodyType = RigidbodyType2D.Dynamic;
-            }
+            
         }
 
 
@@ -198,11 +231,17 @@ public class GrisPlayer : MonoBehaviour
     {
         if (GrisGameSington.Instance.nowPlayerModel == NowPlayerModel.controller)
         {
+            //
+            if(!isGround && rig2D.velocity.y < 0)
+            {
+                playerAni.SetFloat("JumpY", rig2D.velocity.y);
+            }
+
 
             //在地面上按下
             if (isGround && Input.GetKeyDown(KeyCode.Space))
             {
-                rig2D.velocity = new Vector2(rig2D.velocity.x, rig2D.velocity.y + 8);
+                rig2D.velocity = new Vector2(rig2D.velocity.x, rig2D.velocity.y +12);
 
                 isJump = true;
             }
@@ -232,7 +271,7 @@ public class GrisPlayer : MonoBehaviour
                     jumpTime = 0;
                 }
 
-                AudioSource.PlayClipAtPoint(jumpClip, this.transform.position);
+                //AudioSource.PlayClipAtPoint(jumpClip, this.transform.position);
             }
 
             //如果跳跃了一定高度就判定已经离开地面
@@ -245,25 +284,14 @@ public class GrisPlayer : MonoBehaviour
         }
     }
 
-    public void PlayMoveAudio()
+    public void PlayerHp(bool isDamage,int damage)
     {
-        audioSource.clip = runClip;
+        if(isDamage &&hp > 0)
+        {
+            hp -= damage;
 
-        audioSource.Play();
-    }
-
-    public void PlayJumpAudio()
-    {
-        audioSource.clip = jumpClip;
-
-        audioSource.Play();
-    }
-
-    public void PlayFallAudio()
-    {
-        audioSource.clip = fallClip;
-
-        audioSource.Play();
+            Debug.LogError("hp");
+        }
     }
     #endregion
 
@@ -406,6 +434,11 @@ public class GrisPlayer : MonoBehaviour
 
     IEnumerator ToLevel2StroyMethod()
     {
+        ResourcesSington.Instance.LoadAssetAync<AudioClip>("AudioClip/BG4", (clip) =>
+        {
+            AudioSington.Instance.PlayMusic(clip, 1);
+        }); 
+
         AsyncOperation rr = SceneManager.LoadSceneAsync(1);
 
         rr.allowSceneActivation = false;
@@ -426,10 +459,7 @@ public class GrisPlayer : MonoBehaviour
         cameraFollow.ChangeSize(8.17f);
         cameraFollow.MoveTo(this.transform.position + new Vector3(10, 8f, -10), () =>
         {
-            ResourcesSington.Instance.LoadAssetAync<AudioClip>("AudioClip/BG4", (clip) =>
-            {
-                AudioSington.Instance.PlayMusic(clip, 1);
-            });
+            
            
             playerAni.Play("PlayerFly");
             
@@ -457,6 +487,8 @@ public class GrisPlayer : MonoBehaviour
             playerAni.Play("Cry Back");
 
             yield return new WaitForSeconds(2);
+
+            AudioSington.Instance.StopPlay();
 
             rr.allowSceneActivation = true;
         }
