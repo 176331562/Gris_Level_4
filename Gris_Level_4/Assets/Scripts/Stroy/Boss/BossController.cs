@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 /*------------脚本创建者：sikaris----------------
- * -----------脚本作用：BossController--------
- * -----------脚本创建时间：2024-11-07-----------
- */
+* -----------脚本作用：BossController--------
+* -----------脚本创建时间：2024-11-07-----------
+*/
 public class BossController : MonoBehaviour
 {
     //
@@ -126,6 +127,12 @@ public class BossController : MonoBehaviour
     /// <returns></returns>
     IEnumerator BossDeadator()
     {
+        AsyncOperation ao = SceneManager.LoadSceneAsync("StartScene");
+
+        yield return ao;
+
+        ao.allowSceneActivation = false;
+
         yield return new WaitForSeconds(1);
 
         bossView.PlayerTrans.GetComponent<GrisPlayer>().StroyEnd();
@@ -148,6 +155,10 @@ public class BossController : MonoBehaviour
         yield return new WaitForSeconds(2);
 
         bossView.ChangeSky.StartChang(true, new Color(0, 0, 0, 0), 1);
+
+        yield return new WaitForSeconds(3);
+
+        ao.allowSceneActivation = true;
     }
 
     private void MoveTo(bool startMove,Vector3 targetPoint,UnityAction unityAction)

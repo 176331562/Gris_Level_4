@@ -14,7 +14,7 @@ public class ToNextLevelArea : MonoBehaviour
     {
         if(collision.CompareTag("Player"))
         {
-            if (!isTrigger && GrisGameSington.Instance.isFollowTearNum == 5)
+            if (!isTrigger && GrisGameSington.Instance.isFollowTearNum %5 == 0)
             {
                 isTrigger = true;
 

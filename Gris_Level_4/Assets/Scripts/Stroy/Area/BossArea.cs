@@ -27,7 +27,7 @@ public class BossArea : MonoBehaviour
     {
         if(collision.CompareTag("Player"))
         {
-            if (!isEnter && GrisGameSington.Instance.isFollowTearNum == 10)
+            if (!isEnter && GrisGameSington.Instance.isFollowTearNum % 5 == 0)
             {
                 isEnter = true;
 

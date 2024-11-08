@@ -457,7 +457,7 @@ public class GrisPlayer : MonoBehaviour
             AudioSington.Instance.PlayMusic(clip, 1);
         }); 
 
-        AsyncOperation rr = SceneManager.LoadSceneAsync(1);
+        AsyncOperation rr = SceneManager.LoadSceneAsync("Level2");
 
         rr.allowSceneActivation = false;
 
@@ -547,6 +547,12 @@ public class GrisPlayer : MonoBehaviour
 
     IEnumerator PlayerDeadator()
     {
+        AsyncOperation ao = SceneManager.LoadSceneAsync("StartScene");
+
+        yield return ao;
+
+        ao.allowSceneActivation = false;
+
         playerAni.Play("Cry");
 
         yield return new WaitForSeconds(2);
@@ -556,7 +562,9 @@ public class GrisPlayer : MonoBehaviour
 
         playerAni.Play("PlayerFly");
 
+        yield return new WaitForSeconds(5);
 
+        ao.allowSceneActivation = true;
     }
     #endregion
 }
