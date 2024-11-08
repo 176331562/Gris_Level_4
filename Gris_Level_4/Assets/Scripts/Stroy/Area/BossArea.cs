@@ -12,17 +12,54 @@ public class BossArea : MonoBehaviour
 
     public Color color;
 
+    //
+    private GameObject bossObj;
+
+    private void Start()
+    {
+        ResourcesSington.Instance.LoadAssetAync<GameObject>("Prefab/BossGris", (obj) => 
+        {
+            bossObj = obj;
+        });
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.CompareTag("Player"))
         {
-            if(!isEnter /*&& GrisGameSington.Instance.isFollowTearNum == 5*/)
+            if (!isEnter && GrisGameSington.Instance.isFollowTearNum == 10)
             {
                 isEnter = true;
 
-                GameObject.Find("Area/BlackSky").GetComponent<ChangeSky>().StartChang(true, color, 3);
+                ResourcesSington.Instance.LoadAssetAync<AudioClip>("AudioClip/Boss", (clip) =>
+                {
+                    AudioSington.Instance.PlayMusic(clip, 1);
+                });
+
+
+                GameObject.Find("Area/BlackSky").GetComponent<ChangeSky>().StartChang(true, color, 3, () =>
+                 {
+                     LoadBoss();
+                 });
             }
+
+            //isEnter = true;
+
+            //ResourcesSington.Instance.LoadAssetAync<AudioClip>("AudioClip/Boss", (clip) =>
+            //{
+            //    AudioSington.Instance.PlayMusic(clip, 1);
+            //});
+
+
+            //GameObject.Find("Area/BlackSky").GetComponent<ChangeSky>().StartChang(true, color, 3, () =>
+            //{
+            //    LoadBoss();
+            //});
         }
+    }
+
+    private void LoadBoss()
+    {
+        GameObject boss = GameObject.Instantiate(bossObj, this.transform.position, Quaternion.identity);
     }
 }

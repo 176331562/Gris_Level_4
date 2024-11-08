@@ -71,6 +71,10 @@ public class Tear : MonoBehaviour
 
         if(isAlwaysFollow)
         {
+            //Debug.LogError("GrisGameSington.Instance.followTearPoints[nowFollowIndex].position" + GrisGameSington.Instance.followTearPoints[nowFollowIndex].position);
+            //Debug.LogError("nowFollowIndex" + nowFollowIndex);
+            //Debug.LogError("-------------");
+
             this.transform.position = Vector3.Lerp(this.transform.position, GrisGameSington.Instance.followTearPoints[nowFollowIndex].position, speed * Time.deltaTime);
         }
     }
@@ -138,12 +142,6 @@ public class Tear : MonoBehaviour
             if (Vector3.Distance(this.transform.position, movePointArray[movePointArray.Length - tearNum - 1].transform.position) <= 0.1f)
             {
                 StartMoveTo(movePointArray[movePointArray.Length - nowTearIndex].transform.position);
-
-                //Debug.LogError(Vector3.Distance(this.transform.position, movePointArray[movePointArray.Length - nowTearIndex].transform.position));
-
-                //Debug.LogError(movePointArray[movePointArray.Length - nowTearIndex].gameObject.name);
-
-                //Debug.LogError(movePointArray[movePointArray.Length - nowTearIndex].transform.rotation.eulerAngles.z);
             }
 
             if (Vector3.Distance(this.transform.position, movePointArray[movePointArray.Length - nowTearIndex].transform.position) <= 0.1f)
@@ -180,6 +178,12 @@ public class Tear : MonoBehaviour
     private void OnDestroy()
     {
         isDestroy = true;
+
+        //nowFollowNums = 0;
+
+        //GrisGameSington.Instance.isFollowTearNum = 0;
+
+        Debug.Log("销毁了");
     }
 
     public void AlwaysFollow(int nowIndex)

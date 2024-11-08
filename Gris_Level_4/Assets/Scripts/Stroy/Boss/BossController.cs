@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 /*------------脚本创建者：sikaris----------------
  * -----------脚本作用：BossController--------
  * -----------脚本创建时间：2024-11-07-----------
@@ -24,8 +25,12 @@ public class BossController : MonoBehaviour
     void Update()
     {
         //Debug.LogError(bossView.PlayerTrans.position);
+        if(bossModel.playerDead)
+        {
+            return;
+        }
 
-        if(bossModel.hp > 0)
+        if(bossModel.hp != 0 && bossModel.hp > 0 && !bossModel.playerDead)
         {
             if (Vector3.Distance(this.transform.position, bossView.PlayerTrans.position) <= bossModel.attackDis)
             {
@@ -61,6 +66,23 @@ public class BossController : MonoBehaviour
                 bossView.Animator.SetBool("Walk", true);
             }
         }
+
+        if(bossModel.startMove && bossModel.targetPoint != Vector3.zero && bossModel.action != null)
+        {
+            if(Vector3.Distance(this.transform.position,bossModel.targetPoint) > 0.1f)
+            {
+                this.transform.position = Vector3.Lerp(this.transform.position, bossModel.targetPoint, bossModel.moveSpeed * Time.deltaTime);
+            }
+            else
+            {
+                bossModel.startMove = false;
+
+                bossModel.targetPoint = Vector3.zero;
+
+                bossModel.action?.Invoke();
+                bossModel.action = null;
+            }
+        }
     }
 
     public void Damage(int damage)
@@ -68,6 +90,84 @@ public class BossController : MonoBehaviour
         if(bossModel.hp > 0)
         {
             bossModel.hp -= damage;
-        }
+
+            Debug.LogError(bossModel.hp);
+
+            if (bossModel.hp <= 0)
+            {
+                if (!bossModel.isDead)
+                {
+                    bossModel.isDead = true;
+
+                    BossDead();
+                }
+            }
+        }           
+    }
+
+    private void BossDead()
+    {
+        AudioSington.Instance.StopPlay();
+
+        GrisGameSington.Instance.nowPlayerModel = NowPlayerModel.stroy;
+
+        bossView.Animator.SetBool("Sing", false);
+
+        bossView.circleController.SingSang(false);
+
+        bossView.Animator.SetBool("Walk", false);
+
+        StartCoroutine(BossDeadator());
+    }
+
+    /// <summary>
+    /// Boss被打败后
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator BossDeadator()
+    {
+        yield return new WaitForSeconds(1);
+
+        bossView.PlayerTrans.GetComponent<GrisPlayer>().StroyEnd();
+
+        bossView.Animator.Play("Cry");
+
+        yield return new WaitForSeconds(2);
+
+        bossView.Animator.Play("PlayerFly");
+
+
+
+        MoveTo(true, this.transform.position + (this.transform.up * 5),()=> 
+        {
+            
+        });
+
+        Camera.main.GetComponent<CameraFollow>().ChangeSize(10);
+
+        yield return new WaitForSeconds(2);
+
+        bossView.ChangeSky.StartChang(true, new Color(0, 0, 0, 0), 1);
+    }
+
+    private void MoveTo(bool startMove,Vector3 targetPoint,UnityAction unityAction)
+    {
+        this.bossModel.startMove = startMove;
+
+        this.bossModel.targetPoint = targetPoint;
+
+        this.bossModel.action = unityAction;
+    }
+
+    private void MoveTo(bool startMove, Vector3 targetPoint)
+    {
+        this.bossModel.startMove = startMove;
+
+        this.bossModel.targetPoint = targetPoint;
+    }
+
+    public void PlayerIsDead(bool b)
+    {
+        bossModel.playerDead = b;
     }
 }

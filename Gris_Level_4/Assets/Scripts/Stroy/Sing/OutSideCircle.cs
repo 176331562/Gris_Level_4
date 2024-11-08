@@ -21,9 +21,7 @@ public class OutSideCircle : MonoBehaviour
 
     private void Start()
     {
-        grisPlayer = GrisGameSington.Instance.playerTrans.GetComponent<GrisPlayer>();
-
-        bossController = GameObject.FindGameObjectWithTag("Boss").GetComponent<BossController>();
+        grisPlayer = GrisGameSington.Instance.playerTrans.GetComponent<GrisPlayer>();       
     }
 
     private void OnTriggerStay2D(Collider2D collision)
@@ -34,7 +32,12 @@ public class OutSideCircle : MonoBehaviour
 
             if (atkTime > 1f)
             {
-                grisPlayer.PlayerHp(true, 2);
+                if(grisPlayer.PlayerHp(true, 2))
+                {
+                    bossController = GameObject.FindGameObjectWithTag("Boss").GetComponent<BossController>();
+
+                    bossController.PlayerIsDead(true);
+                }
 
                 atkTime = 0;
             }          
@@ -42,6 +45,11 @@ public class OutSideCircle : MonoBehaviour
         else if(!isBoss && collision.CompareTag("Boss"))
         {
             atkTime += Time.deltaTime;
+
+            if(bossController == null)
+            {
+                bossController = collision.GetComponent<BossController>();
+            }
 
             if (atkTime > 1f)
             {

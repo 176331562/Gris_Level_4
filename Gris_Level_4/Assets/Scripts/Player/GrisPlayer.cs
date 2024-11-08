@@ -52,7 +52,7 @@ public class GrisPlayer : MonoBehaviour
     private StroyMoveType moveType = StroyMoveType.None;
 
     //行走音频
-    private AudioClip runClip, jumpClip, fallClip;
+    private AudioClip runClip, jumpClip, fallClip,singClip;
 
     private float runTime,jumpTime;
 
@@ -105,12 +105,11 @@ public class GrisPlayer : MonoBehaviour
 
         fallClip = ResourcesSington.Instance.LoadAsset<AudioClip>("AudioClip/Land");
 
-        GrisGameSington.Instance.nowPlayerModel = NowPlayerModel.controller;
+        singClip = ResourcesSington.Instance.LoadAsset<AudioClip>("AudioClip/Sing");
 
-        if(GrisGameSington.Instance.nowStoryLevel  == NowStoryLevel.level2)
-        {
-            circleController = this.transform.Find("SingCicle").GetComponent<SingCircleController>();
-        }
+        //GrisGameSington.Instance.nowPlayerModel = NowPlayerModel.controller;
+
+        circleController = this.transform.Find("SingCicle").GetComponent<SingCircleController>();
     }
 
   
@@ -148,6 +147,15 @@ public class GrisPlayer : MonoBehaviour
 
                 circleController.SingSang(true);
 
+                if (audioSource.clip == null)
+                {
+                    audioSource.clip = singClip;
+                }
+                if (!audioSource.isPlaying)
+                {
+                    audioSource.Play();
+                }
+
                 return;
             }
             else
@@ -155,6 +163,8 @@ public class GrisPlayer : MonoBehaviour
                 playerAni.SetBool("Sing", false);
 
                 circleController.SingSang(false);
+
+                audioSource.Stop();
 
                 float horizontal = Input.GetAxisRaw("Horizontal");
 
@@ -284,14 +294,22 @@ public class GrisPlayer : MonoBehaviour
         }
     }
 
-    public void PlayerHp(bool isDamage,int damage)
+    public bool PlayerHp(bool isDamage,int damage)
     {
         if(isDamage &&hp > 0)
         {
             hp -= damage;
 
             Debug.LogError("hp");
+
+            if(hp <= 0)
+            {
+                PlayerDead();
+
+                return true;
+            }
         }
+        return false;
     }
     #endregion
 
@@ -475,6 +493,8 @@ public class GrisPlayer : MonoBehaviour
         {
             Debug.LogError("完成");
 
+            AudioSington.Instance.StopPlay();
+
             Vector3 targetPoint = new Vector3(GrisGameSington.Instance.playerTrans.position.x, GrisGameSington.Instance.playerTrans.position.y + 3.5f, -10);
             cameraFollow.MoveToPlayer(true);
 
@@ -492,6 +512,51 @@ public class GrisPlayer : MonoBehaviour
 
             rr.allowSceneActivation = true;
         }
+    }
+
+    /// <summary>
+    /// 结局
+    /// </summary>
+    public void StroyEnd()
+    {
+        isGround = true;
+
+        circleController.SingSang(true);
+
+        playerAni.SetBool("Run", false);
+        playerAni.SetBool("Walk", false);
+        playerAni.SetBool("Sing", true);
+
+    }
+
+    public void PlayerDead()
+    {
+        hp = 0;
+
+        AudioSington.Instance.StopPlay();
+        GrisGameSington.Instance.nowPlayerModel = NowPlayerModel.stroy;
+
+        circleController.SingSang(false);
+
+        playerAni.SetBool("Run", false);
+        playerAni.SetBool("Walk", false);
+        playerAni.SetBool("Sing", false);
+
+        StartCoroutine(PlayerDeadator());
+    }
+
+    IEnumerator PlayerDeadator()
+    {
+        playerAni.Play("Cry");
+
+        yield return new WaitForSeconds(2);
+
+        StartStroy(this.transform.position + (this.transform.up * 5), sr.flipX, StroyMoveType.None, () => { });
+
+
+        playerAni.Play("PlayerFly");
+
+
     }
     #endregion
 }

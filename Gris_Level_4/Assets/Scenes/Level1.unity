@@ -9752,10 +9752,5 @@ PrefabInstance:
       propertyPath: m_Name
       value: Gris
       objectReference: {fileID: 0}
-    - target: {fileID: 7547970081535520466, guid: 71083ac8b90d879438f35720dc4aaeb8,
-        type: 3}
-      propertyPath: m_PlayOnAwake
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 71083ac8b90d879438f35720dc4aaeb8, type: 3}

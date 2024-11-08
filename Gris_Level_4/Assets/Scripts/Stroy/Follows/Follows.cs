@@ -22,6 +22,9 @@ public class Follows : MonoBehaviour
     //
     private Transform tearPoint;
 
+    //
+    private static AudioClip audioClip;
+
     private void Start()
     {
         animator = this.GetComponent<Animator>();
@@ -29,6 +32,11 @@ public class Follows : MonoBehaviour
         ResourcesSington.Instance.LoadAssetAync<GameObject>("Prefab/TearItem", (obj) => 
         {
             tearItem = obj;
+        });
+
+        ResourcesSington.Instance.LoadAssetAync<AudioClip>("AudioClip/Bloom", (clip) =>
+        {
+            audioClip = clip;
         });
 
         tearPoint = this.transform.GetChild(0).transform;
@@ -42,6 +50,8 @@ public class Follows : MonoBehaviour
             if (!isOpen)
             {
                 animator.Play("Open");
+
+                AudioSource.PlayClipAtPoint(audioClip, this.transform.position);
 
                 isOpen = true;
 

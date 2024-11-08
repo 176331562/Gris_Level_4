@@ -19,6 +19,9 @@ public class BossView : MonoBehaviour
     //
     public SingCircleController circleController { get; set; }
 
+    //
+    public ChangeSky ChangeSky { get; set; }
+
     private void Start()
     {
         Sr = this.GetComponent<SpriteRenderer>();
@@ -28,6 +31,8 @@ public class BossView : MonoBehaviour
         Animator = this.GetComponent<Animator>();
 
         circleController = this.transform.Find("SingCicle").GetComponent<SingCircleController>();
+
+        ChangeSky = GameObject.Find("Area/BlackSky").GetComponent<ChangeSky>();
     }
 
 }

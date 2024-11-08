@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 /*------------脚本创建者：sikaris----------------
  * -----------脚本作用：BossModel--------
  * -----------脚本创建时间：2024-11-07-----------
@@ -18,4 +19,19 @@ public class BossModel : MonoBehaviour
 
     //血量
     public int hp;
+
+    //
+    public bool startMove;
+
+    //
+    public bool isDead;
+
+    //
+    public Vector3 targetPoint;
+
+    //
+    public UnityAction action;
+
+    //
+    public bool playerDead;
 }

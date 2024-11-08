@@ -20,8 +20,6 @@ public class ChangeSoundArea : MonoBehaviour
 
                 ResourcesSington.Instance.LoadAssetAync<AudioClip>("AudioClip/BG2", (clip) =>
                 {
-                    Debug.LogError(clip.name);
-
                     AudioSington.Instance.ChangeSound(true, clip);
                 });
             }

@@ -8,19 +8,29 @@ using UnityEngine;
 public class LevelStroy2 : MonoBehaviour
 {
 
+    //
+
+
     private void OnEnable()
     {
+
+
         GrisGameSington.Instance.nowStoryLevel = NowStoryLevel.level2;
+
+        GrisGameSington.Instance.isFollowTearNum = 0;
+
+        GrisGameSington.Instance.nowPlayerModel = NowPlayerModel.controller;
+
+        GrisGameSington.Instance.playerTrans = GameObject.FindGameObjectWithTag("Player").transform;
+
+        ResourcesSington.Instance.LoadAssetAync<AudioClip>("AudioClip/BG6", (clip) =>
+        {
+            AudioSington.Instance.PlayMusic(clip, 1);
+        });
     }
 
-    void Start()
+    private void Update()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        Debug.LogError(GrisGameSington.Instance.isFollowTearNum);
     }
 }

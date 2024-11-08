@@ -38,6 +38,8 @@ public class TearAsset : MonoBehaviour
         });
 
         grisPlayer = GrisGameSington.Instance.playerTrans.GetComponent<GrisPlayer>();
+
+       
     }
 
     private void Update()
@@ -70,4 +72,16 @@ public class TearAsset : MonoBehaviour
 
         ++followIndex;
     }
+
+    private void OnDestroy()
+    {
+        if(followIndex == 5)
+        {
+            followIndex = 0;
+
+            //GrisGameSington.Instance.isFollowTearNum = 0;
+        }
+    }
+
+
 }
